@@ -6,6 +6,8 @@
   ==============================================================================
 */
 
+// 1:14:50 https://www.youtube.com/watch?v=i_Iq4_Kd7Rc&list=PLkFVTq3iqOxkI1X6B9YYSoXvCE_LRBj2O&index=3&t=96s
+
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
@@ -109,7 +111,7 @@ void SimpleEQAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
     
     auto cutCoefficients = juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(chainSettings.lowCutFreq,
                                                                                                       sampleRate, 2 * (chainSettings.lowCutSlope + 1));
-//
+    
     auto& leftLowCut = leftChain.get<ChainPositions::LowCut>();
     updateCutFilter(leftLowCut, cutCoefficients, chainSettings.lowCutSlope);
     
