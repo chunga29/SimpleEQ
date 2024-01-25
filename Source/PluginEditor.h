@@ -206,6 +206,10 @@ struct PathProducer
     juce::Path getPath() {return leftChannelFFTPath; }
 
 private:
+    
+    // ======== Spectrum Analyzer ========
+    // Host Buffers x Samples ----> Single Channel Sample FIFO --(fixed size blocks)--> FFT Data Generator --(fft data blocks)--> Path Producer --(juce::path)--> GUI
+    
     SingleChannelSampleFifo<SimpleEQAudioProcessor::BlockType>* leftChannelFifo;
     
     juce::AudioBuffer<float> monoBuffer;
@@ -231,6 +235,11 @@ juce::Timer
     
     void paint(juce::Graphics& g) override;
     void resized() override;
+    
+    void toggleAnalysisEnablement(bool enabled)
+    {
+        shouldShowFFTAnalysis = enabled;
+    }
 private:
     SimpleEQAudioProcessor& audioProcessor;
     juce::Atomic<bool> parametersChanged { false };
@@ -246,10 +255,7 @@ private:
     
     PathProducer leftPathProducer, rightPathProducer;
     
-    
-    // ======== Spectrum Analyzer ========
-    // Host Buffers x Samples ----> Single Channel Sample FIFO --(fixed size blocks)--> FFT Data Generator --(fft data blocks)--> Path Producer --(juce::path)--> GUI
-    
+    bool shouldShowFFTAnalysis = true;
 };
 
 //==============================================================================
