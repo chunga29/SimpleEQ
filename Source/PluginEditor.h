@@ -11,6 +11,9 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 
+#define ACCENTCOLOR juce::Colour(94u, 171u, 242u)
+
+
 enum FFTOrder
 {
     order2048 = 11,
@@ -184,7 +187,7 @@ struct RotarySliderWithLabels : juce::Slider
     
     void paint(juce::Graphics& g) override;
     juce::Rectangle<int> getSliderBounds() const;
-    int getTextHeight() const {return 14;}
+    int getTextHeight() const {return 15;}
     juce::String getDisplayString() const;
 private:
     LookAndFeel lnf;
@@ -198,7 +201,7 @@ struct PathProducer
     PathProducer(SingleChannelSampleFifo<SimpleEQAudioProcessor::BlockType>& scsf) :
     leftChannelFifo(&scsf)
     {
-        leftChannelFFTDataGenerator.changeOrder(FFTOrder::order2048);
+        leftChannelFFTDataGenerator.changeOrder(FFTOrder::order8192);
         monoBuffer.setSize(1, leftChannelFFTDataGenerator.getFFTSize());
     }
     

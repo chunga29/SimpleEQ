@@ -24,9 +24,11 @@ void LookAndFeel::drawRotarySlider(juce::Graphics &g,
     
     auto enabled = slider.isEnabled();
     
-    g.setColour(enabled ? Colour(97u, 18u, 167u) : Colours::darkgrey);
+    // BUTTON COLOR
+    g.setColour(enabled ? Colour(245u, 245u, 245u) : Colours::darkgrey);
     g.fillEllipse(bounds);
     
+    // BUTTON BORDER COLOR
     g.setColour(enabled ? Colour(255u, 154u, 1u) : Colours::grey);
     g.drawEllipse(bounds, 1.f);
     
@@ -48,17 +50,19 @@ void LookAndFeel::drawRotarySlider(juce::Graphics &g,
         p.applyTransform(AffineTransform().rotated(sliderAngRad, center.getX(), center.getY()));
         g.fillPath(p);
         
-        g.setFont(rswl->getTextHeight());
+        g.setFont(rswl->getTextHeight()); // VALUE TEXT FONT SIZES
         auto text = rswl->getDisplayString();
         auto strWidth = g.getCurrentFont().getStringWidth(text);
         
         r.setSize(strWidth + 4, rswl->getTextHeight() + 2);
         r.setCentre(bounds.getCentre());
         
-        g.setColour(enabled ? Colours::black : Colours::darkgrey);
-        g.fillRect(r);
+        // BOXES AROUND VALUES
+//        g.setColour(enabled ? Colours::lime : Colours::darkgrey);
+//        g.fillRect(r);
         
-        g.setColour(enabled ? Colours::white : Colours::lightgrey);
+        // VALUE TEXT
+        g.setColour(enabled ? Colours::black : Colours::lightgrey);
         g.drawFittedText(text, r.toNearestInt(), juce::Justification::centred, 1);
     }
 }
@@ -75,9 +79,6 @@ void LookAndFeel::drawToggleButton(juce::Graphics &g,
         Path powerButton;
         
         auto bounds = toggleButton.getLocalBounds();
-        
-        //    g.setColour(Colours::red);
-        //    g.drawRect(bounds);
         
         auto size = jmin(bounds.getWidth(), bounds.getHeight()) - 8;
         auto r = bounds.withSizeKeepingCentre(size, size).toFloat();
@@ -99,13 +100,13 @@ void LookAndFeel::drawToggleButton(juce::Graphics &g,
         
         PathStrokeType pst(2.f, PathStrokeType::JointStyle::curved);
         
-        auto color = toggleButton.getToggleState() ? Colours::dimgrey : Colour(0u, 172u, 1u);
+        auto color = toggleButton.getToggleState() ? Colours::dimgrey : ACCENTCOLOR;
         
         g.setColour(color);
         g.strokePath(powerButton, pst);
         g.drawEllipse(r, 2);
     } else if (auto* analyzerButton = dynamic_cast<AnalyzerButton*>(&toggleButton)) {
-        auto color = ! toggleButton.getToggleState() ? Colours::dimgrey : Colour(0u, 172u, 1u);
+        auto color = ! toggleButton.getToggleState() ? Colours::dimgrey : ACCENTCOLOR;
         
         g.setColour(color);
         
@@ -125,13 +126,7 @@ void RotarySliderWithLabels::paint(juce::Graphics& g) {
     auto range = getRange();
     
     auto sliderBounds = getSliderBounds();
-    
-    // Tracing of bounding boxes
-//    g.setColour(Colours::red);
-//    g.drawRect(getLocalBounds());
-//    g.setColour(Colours::yellow);
-//    g.drawRect(sliderBounds);
-    
+        
     getLookAndFeel().drawRotarySlider(g,
                                       sliderBounds.getX(), 
                                       sliderBounds.getY(),
@@ -145,7 +140,7 @@ void RotarySliderWithLabels::paint(juce::Graphics& g) {
     auto center = sliderBounds.toFloat().getCentre();
     auto radius = sliderBounds.getWidth() * 0.5f;
     
-    g.setColour(Colour(0u, 172u, 1u));
+    g.setColour(ACCENTCOLOR);
     g.setFont(getTextHeight());
     
     auto numChoices = labels.size();
@@ -221,7 +216,6 @@ juce::String RotarySliderWithLabels::getDisplayString() const
 
 ResponseCurveComponent::ResponseCurveComponent(SimpleEQAudioProcessor& p) : 
 audioProcessor(p),
-//leftChannelFifo(&audioProcessor.leftChannelFifo)
 leftPathProducer(audioProcessor.leftChannelFifo),
 rightPathProducer(audioProcessor.rightChannelFifo)
 {
@@ -230,10 +224,7 @@ rightPathProducer(audioProcessor.rightChannelFifo)
         param->addListener(this);
     }
     
-    
-    
     updateChain();
-    
     startTimer(60);
 }
 
@@ -341,7 +332,7 @@ void ResponseCurveComponent::paint (juce::Graphics& g)
 {
     using namespace juce;
     // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (Colours::black);
+    g.fillAll (Colours::darksalmon);
     
     g.drawImage(background, getLocalBounds().toFloat());
     
@@ -470,11 +461,11 @@ void ResponseCurveComponent::resized()
     for (auto gDb : gain) {
         auto y = jmap(gDb, -24.f, 24.f, float(bottom), float(top));
 
-        g.setColour(gDb == 0.f ? Colour(0u, 172u, 1u) : Colours::darkgrey );
+        g.setColour(gDb == 0.f ? ACCENTCOLOR : Colours::darkgrey );
         g.drawHorizontalLine(y, left, right);
     }
 
-    
+    // Spectrum Analyzer Font
     g.setColour(Colours::lightgrey);
     const int fontHeight = 10;
     g.setFont(fontHeight);
@@ -520,7 +511,7 @@ void ResponseCurveComponent::resized()
         r.setX(getWidth() - textWidth);
         r.setCentre(r.getCentreX(), y);
         
-        g.setColour(gDb == 0.f ? Colour(0u, 172u, 1u) : Colours::lightgrey);
+        g.setColour(gDb == 0.f ? ACCENTCOLOR : Colours::lightgrey);
         
         g.drawFittedText(str, r, juce::Justification::centred, 1);
         
@@ -535,6 +526,7 @@ void ResponseCurveComponent::resized()
     }
 }
 
+// Whole Graph
 juce::Rectangle<int> ResponseCurveComponent::getRenderArea()
 {
     auto bounds = getLocalBounds();
@@ -653,7 +645,7 @@ analyzerEnabledButtonAttachment(audioProcessor.apvts, "Analyzer Enabled", analyz
         }
     };
     
-    setSize (600, 480);
+    setSize (750, 600);
 }
 
 SimpleEQAudioProcessorEditor::~SimpleEQAudioProcessorEditor()
@@ -669,7 +661,7 @@ void SimpleEQAudioProcessorEditor::paint (juce::Graphics& g)
 {
     using namespace juce;
     // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (Colours::black);
+    g.fillAll (Colours::whitesmoke);
     
 }
 
@@ -687,7 +679,7 @@ void SimpleEQAudioProcessorEditor::resized()
     analyzerEnabledButton.setBounds(analyzerEnabledArea);
     bounds.removeFromTop(5);
     
-    float hRatio = 25.f / 100.f; // JUCE_LIVE_CONSTANT(33) / 100.f;
+    float hRatio = 33.f / 100.f; // JUCE_LIVE_CONSTANT(33) / 100.f;
     auto responseArea = bounds.removeFromTop(bounds.getHeight() * hRatio);
     responseCurveComponent.setBounds(responseArea);
     
