@@ -55,10 +55,10 @@ void LookAndFeel::drawRotarySlider(juce::Graphics &g,
         r.setSize(strWidth + 4, rswl->getTextHeight() + 2);
         r.setCentre(bounds.getCentre());
         
-        g.setColour(Colours::black);
+        g.setColour(enabled ? Colours::black : Colours::darkgrey);
         g.fillRect(r);
         
-        g.setColour(Colours::white);
+        g.setColour(enabled ? Colours::white : Colours::lightgrey);
         g.drawFittedText(text, r.toNearestInt(), juce::Justification::centred, 1);
     }
 }
@@ -111,19 +111,7 @@ void LookAndFeel::drawToggleButton(juce::Graphics &g,
         
         auto bounds = toggleButton.getLocalBounds();
         g.drawRect(bounds);
-        
-//        auto insetRect = bounds.reduced(4);
-        
-//        Path randomPath;
-//        Random r;
-//        
-//        randomPath.startNewSubPath(insetRect.getX(), 
-//                                   insetRect.getY() + insetRect.getHeight() * r.nextFloat());
-//        
-//        for (auto x = insetRect.getX() + 1; x < insetRect.getRight(); x += 2) {
-//            randomPath.lineTo(x, insetRect.getY() + insetRect.getHeight() * r.nextFloat());
-//        }
-        
+                
         g.strokePath(analyzerButton->randomPath, PathStrokeType(1.f));
     }
 }
